@@ -1,0 +1,138 @@
+@startuml
+class "Bank" as classBank
+class "Client" as classClient
+class "Address" as classAddress
+class "Passport" as classPassport
+abstract "Account" as abstractAccount
+class "DebitAccount" as classDebitAccount
+class "Deposit" as classDeposit
+class "CreditAccount" as classCreditAccount
+abstract "Operation" as abstractOperation
+class "Replenishment" as classReplenishment
+class "Withdrawal" as classWithdrawal
+class "Transfer" as classTransfer
+
+class classBank {
+  -accounts : dict
+  -clients : dict
+  +name : str
+  +credit_limit : float
+  +unid_limit : float
+  +commission : float
+  +deposit_rate : float
+  +get_accounts() -> dict
+  +get_clients() -> dict
+}
+
+class classAddress {
+  +city : str
+  +street : str
+  +house : int
+  +flat : int
+}
+
+class classPassport {
+  +series : str
+  +number : str
+  +issued_by : str
+  +when_issued : str
+}
+
+class classClient {
+  +bank : Bank
+  +name : str
+  +surname : str
+  -address : Address
+  -passport : Passport
+  +is_identified : bool
+  -password : str
+  -accounts : dict
+  +add_address() -> None
+  +add_passport() -> None
+  +update_status() -> None
+  +set_password() -> None
+  +get_password() -> str
+  +is_address_set() -> bool
+  +is_passport_set() -> bool
+  +get_accounts() -> dict
+}
+
+abstract abstractAccount {
+  +bank : Bank
+  +client : Client
+  +balance : float
+  +id : str
+  {abstract} #update_balance() -> None
+}
+
+class classDebitAccount {
+  +bank : Bank
+  +client : Client
+  +balance : float
+  +id : str
+  #update_balance() -> None
+}
+
+class classDeposit {
+  +bank : Bank
+  +client : Client
+  +balance : float
+  +id : str
+  +period : int
+  +start_amount : float
+  +active : bool
+  +end_time : int
+  #update_balance() -> None
+  +start() -> None
+  +check_balance() -> None
+} 
+
+class classCreditAccount {
+  +bank : Bank
+  +client : Client
+  +balance : float
+  +id : str
+  #update_balance() -> bool
+}
+
+abstract abstractOperation {
+  +bank : Bank
+  +account : str
+  +amount : float
+  {abstract} +execute() -> None
+}
+
+class classReplenishment {
+  +bank : Bank
+  +account : str
+  +amount : float
+  +execute() -> None
+}
+
+class classWithdrawal {
+  +bank : Bank
+  +account : str
+  +amount : float
+  +execute() -> None
+}
+
+class classTransfer {
+  +bank : Bank
+  +bank_to : Bank
+  +account : str
+  +account_to : str
+  +amount : float
+  +execute() -> None
+  cancel() -> None
+}
+
+classBank"*" <-- "1"classClient
+classAddress --* classClient
+classPassport --* classClient
+abstractAccount <|-- classDebitAccount
+abstractAccount <|-- classDeposit
+abstractAccount <|-- classCreditAccount
+abstractOperation <|-- classReplenishment
+abstractOperation <|-- classWithdrawal
+abstractOperation <|-- classTransfer
+@enduml
