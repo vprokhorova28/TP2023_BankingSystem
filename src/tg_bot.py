@@ -41,7 +41,8 @@ start_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(button_banks)
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(msg: Message):
-    await bot.send_message(msg.from_user.id, bot_config.START_MSG, reply_markup=start_markup)
+    await bot.send_message(msg.from_user.id, bot_config.START_MSG,
+                           reply_markup=start_markup)
 
 
 @dp.message_handler(commands=['help'])
@@ -129,11 +130,13 @@ async def process_password(msg: Message, state: FSMContext):
             list_banks[data['bank']].get_clients() and \
             data['password'] == list_banks[data['bank']].get_clients()[
         (data['name'], data['surname'])].get_password():
-        await bot.send_message(msg.from_user.id, bot_config.AUTHORIZATION_SUCCEEDED,
+        await bot.send_message(msg.from_user.id,
+                               bot_config.AUTHORIZATION_SUCCEEDED,
                                reply_markup=action_choose_markup)
         await state.reset_state(with_data=False)
     else:
-        await bot.send_message(msg.from_user.id, bot_config.AUTHORIZATION_FAILED,
+        await bot.send_message(msg.from_user.id,
+                               bot_config.AUTHORIZATION_FAILED,
                                reply_markup=personal_account)
         await Authorization.bank.set()
 
@@ -184,7 +187,8 @@ async def registration_address(msg: Message, state: FSMContext):
     data = await state.get_data()
     if list_banks[data['bank']].get_clients()[
         (data['name'], data['surname'])].is_address_set():
-        await bot.send_message(msg.from_user.id, bot_config.ADDRESS_ALREADY_ADDED)
+        await bot.send_message(msg.from_user.id,
+                               bot_config.ADDRESS_ALREADY_ADDED)
     else:
         await bot.send_message(msg.from_user.id, bot_config.ENTER_CITY,
                                reply_markup=ReplyKeyboardRemove())
@@ -223,7 +227,8 @@ async def registration_flat(msg: Message, state: FSMContext):
     if list_banks[data['bank']].get_clients()[
         (data['name'], data['surname'])].is_identified:
         await bot.send_message(msg.from_user.id,
-                               bot_config.ADDRESS_ADDED + bot_config.STATUS_IDENTIFIED,
+                               bot_config.ADDRESS_ADDED +
+                               bot_config.STATUS_IDENTIFIED,
                                reply_markup=action_choose_markup)
     else:
         await bot.send_message(msg.from_user.id, bot_config.ADDRESS_ADDED,
@@ -236,9 +241,11 @@ async def registration_passport(msg: Message, state: FSMContext):
     data = await state.get_data()
     if list_banks[data['bank']].get_clients()[
         (data['name'], data['surname'])].is_passport_set():
-        await bot.send_message(msg.from_user.id, bot_config.PASSPORT_ALREADY_ADDED)
+        await bot.send_message(msg.from_user.id,
+                               bot_config.PASSPORT_ALREADY_ADDED)
     else:
-        await bot.send_message(msg.from_user.id, bot_config.ENTER_PASSPORT_SERIES,
+        await bot.send_message(msg.from_user.id,
+                               bot_config.ENTER_PASSPORT_SERIES,
                                reply_markup=ReplyKeyboardRemove())
         await Registration.series.set()
 
@@ -276,7 +283,8 @@ async def registration_when_issued(msg: Message, state: FSMContext):
     if list_banks[data['bank']].get_clients()[
         (data['name'], data['surname'])].is_identified:
         await bot.send_message(msg.from_user.id,
-                               bot_config.PASSPORT_ADDED + bot_config.STATUS_IDENTIFIED,
+                               bot_config.PASSPORT_ADDED +
+                               bot_config.STATUS_IDENTIFIED,
                                reply_markup=action_choose_markup)
     else:
         await bot.send_message(msg.from_user.id, bot_config.PASSPORT_ADDED,
@@ -410,7 +418,8 @@ async def replenishment_amount(msg: Message, state: FSMContext):
         save_data(list_banks)
         account = list_banks[data['bank']].get_clients()[
             (data['name'], data['surname'])].get_accounts()[data["account_to"]]
-        await bot.send_message(msg.from_user.id, bot_config.OPERATION_SUCCEEDED,
+        await bot.send_message(msg.from_user.id,
+                               bot_config.OPERATION_SUCCEEDED,
                                reply_markup=action_choose_markup)
         await state.reset_state(with_data=False)
         if isinstance(account, Deposit):
@@ -428,7 +437,8 @@ async def deposit_period(msg: Message, state: FSMContext):
         (data['name'], data['surname'])].get_accounts()[data["account_to"]]
     account.start(int(msg.text))
     await bot.send_message(msg.from_user.id,
-                           bot_config.DEPOSIT_OPENED + f'{time.ctime(account.end_time)}',
+                           bot_config.DEPOSIT_OPENED +
+                           f'{time.ctime(account.end_time)}',
                            reply_markup=action_choose_markup)
     await state.reset_state(with_data=False)
 
@@ -447,7 +457,8 @@ async def my_accounts(msg: Message, state: FSMContext):
         if isinstance(account, Deposit):
             account.check_balance()
             accounts += f'\n\n{num}. (депозит) {account.id}\nбаланс: ' \
-                        f'{account.balance} рублей\nставка: {account.bank.deposit_rate}%'
+                        f'{account.balance} рублей\nставка:' \
+                        f'{account.bank.deposit_rate}%'
             if account.active:
                 accounts += f'\nконец срока: {time.ctime(account.end_time)}'
         if isinstance(account, CreditAccount):
@@ -479,7 +490,8 @@ async def transfer_account_from(msg: Message, state: FSMContext):
         await state.reset_state(with_data=False)
     else:
         await state.update_data(account_from=msg.text)
-        await bot.send_message(msg.from_user.id, bot_config.ENTER_ACCOUNT_TO_ID)
+        await bot.send_message(msg.from_user.id,
+                               bot_config.ENTER_ACCOUNT_TO_ID)
         await TransferStates.account_to.set()
 
 
@@ -519,6 +531,7 @@ async def transfer_amount(msg: Message, state: FSMContext):
         await state.reset_state(with_data=False)
     else:
         save_data(list_banks)
-        await bot.send_message(msg.from_user.id, bot_config.OPERATION_SUCCEEDED,
+        await bot.send_message(msg.from_user.id,
+                               bot_config.OPERATION_SUCCEEDED,
                                reply_markup=action_choose_markup)
         await state.reset_state(with_data=False)
