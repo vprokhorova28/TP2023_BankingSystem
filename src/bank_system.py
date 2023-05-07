@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 import time
 import uuid
 from exceptions import OperationFailed, Unidentified
-from globals import MONTH, DAY, HOUR, MINUTE
+from constants import MONTH, DAY, HOUR, MINUTE
 
 class Bank:
     def __init__(self, name: str, credit_limit: float, unid_limit: float,
